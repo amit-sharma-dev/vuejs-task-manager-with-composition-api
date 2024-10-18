@@ -2,6 +2,7 @@
 import { ref, reactive, computed } from "vue";
 import Task from './components/Task.vue';
 import Filter from './components/Filter.vue';
+import ModalWindow from './components/ModalWindow.vue';
 
 const tasks = reactive([
     {
