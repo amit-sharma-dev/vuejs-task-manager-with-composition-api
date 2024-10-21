@@ -1,94 +1,16 @@
 <script setup>
-import { ref, reactive, computed } from "vue";
 import Task from './components/Task.vue';
 import Filter from './components/Filter.vue';
 import ModalWindow from './components/ModalWindow.vue';
+import AddTaskModal from './components/AddTaskModal.vue';
+import { useTasksStore } from "./stores/tasks.store";
 
-const tasks = reactive([
-    {
-      name: "Website design",
-      description: "Define the style guide, branding and create the webdesign on Figma.",
-      completed: true,
-      id: 1
-    },
-    {
-      name: "Website development",
-      description: "Develop the portfolio website using Vue JS.",
-      completed: false,
-      id: 2
-    },
-    {
-      name: "Hosting and infrastructure",
-      description: "Define hosting, domain and infrastructure for the portfolio website.",
-      completed: false,
-      id: 3
-    },
-    {
-      name: "Composition API",
-      description: "Learn how to use the composition API and how it compares to the options API.",
-      completed: true,
-      id: 4
-    },
-    {
-      name: "Pinia",
-      description: "Learn how to setup a store using Pinia.",
-      completed: true,
-      id: 5
-    },
-    {
-      name: "Groceries",
-      description: "Buy rice, apples and potatos.",
-      completed: false,
-      id: 6
-    },
-    {
-      name: "Bank account",
-      description: "Open a bank account for my freelance business.",
-      completed: false,
-      id: 7
-    }
-]);
+const store = useTasksStore();
 
-let newTask = { completed: false };
+store.$subscribe((mutation, state) => {
+  localStorage.setItem('tasks', JSON.stringify(state.tasks));
+})
 
-function addTask() {
-    if(newTask.name && newTask.description) {
-      newTask.id = Math.max(...tasks.map(task => task.id)) + 1;
-      tasks.push(newTask);
-      newTask = { completed: false };
-    } else {
-      alert("Please enter title and description!");
-    }
-
-  }
-
-  function toggleCompleted(id) {
-    tasks.forEach(task => {
-      if(task.id === id) {
-        task.completed = !task.completed;
-      }
-    })
-  }
-
-  let filterBy = ref("");
-
-  function setFilter(val) {
-    filterBy.value = val;
-  }
-
-  const filteredTask = computed(() => {
-    switch (filterBy.value) {
-      case 'todo':
-        return tasks.filter(task => !task.completed);
-        break;
-      case 'done':
-        return tasks.filter(task => task.completed);
-        break;
-      default:
-        return tasks;
-        break;
-    }
-  })
 </script>
 
 <template>
@@ -100,24 +22,21 @@ function addTask() {
           Tasks Manager
         </h1>
       </div>
+
+      <div class="header-side">
+        <button @click="store.openModal" class="btn secondary">+ Add Task</button>
+      </div>
     </div>
     
-    <Filter @setFilter="setFilter" :filterBy="filterBy" />
+    <Filter/>
 
     <div class="tasks">
-      
-      <Task @setFilter="setFilter" v-for="(task, index) in filteredTask" :task="task" :key="index" />
-
+      <Task v-for="(task, index) in store.filteredTask" :task="task" :key="index" />
     </div>
-
-    <div class="add-task">
-      <h3>Add a new task</h3>
-      <input v-model="newTask.name" type="text" name="title" placeholder="Enter a title..."><br />
-      <textarea v-model="newTask.description" name="description" rows="4" placeholder="Enter a description..." /><br />
-      <button @click="addTask" class="btn gray">Add Task</button>
-
-    </div>
-
+    
+    <ModalWindow v-if="store.modalIsActive" >
+      <AddTaskModal />
+    </ModalWindow>
   </main>
   
    

@@ -1,28 +1,19 @@
-<script setup></script>
+<script setup>
+  import ModelClose from './ModalClose.vue';
+  import { useTasksStore } from '../stores/tasks.store';
+  const store = useTasksStore();
+</script>
 
 <template>
   <div class="modal-wrapper" aria-modal="true" role="dialog" tabindex="-1">
     <div class="inner">
-      <button class="close-btn">
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          width="20"
-          height="20"
-          viewBox="0 0 256 256"
-        >
-          <path
-            fill="currentColor"
-            d="M208.49 191.51a12 12 0 0 1-17 17L128 145l-63.51 63.49a12 12 0 0 1-17-17L111 128L47.51 64.49a12 12 0 0 1 17-17L128 111l63.51-63.52a12 12 0 0 1 17 17L145 128Z"
-          />
-        </svg>
-      </button>
-
-      <div class="form">Your popup content goes here</div>
+        <ModelClose  @click="store.closeModal"/>
+      <slot></slot>
     </div>
   </div>
 </template>
 
-<style lang="scss" scoped>
+<style lang="scss">
 .modal-wrapper {
   position: fixed;
   left: 0;
